@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:background="#484848"
+    android:orientation="vertical">
+
+     <GridView
+         android:id="@+id/share_gridView"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+
+         android:gravity="center"
+         android:horizontalSpacing="5dp"
+         android:listSelector="@android:color/transparent"
+         android:numColumns="3"
+         android:paddingBottom="10dp"
+         android:paddingTop="15dp"
+         android:verticalSpacing="5dp"></GridView>
+
+
+    <!--   <RelativeLayout
+           android:id="@+id/share_cancel"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginBottom="15dp"
+           android:layout_marginLeft="4dp"
+           android:layout_marginRight="4dp"
+           android:layout_marginTop="10dp"
+           android:background="@mipmap/share_cancle"
+           android:gravity="center">-->
+
+    <Button
+        android:id="@+id/share_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:layout_marginLeft="25dip"
+        android:layout_marginRight="25dip"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/bt_bg"
+        android:text="取 消"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp" />
+    <!--
+        </RelativeLayout>-->
+
+</LinearLayout>
