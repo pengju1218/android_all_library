@@ -27,6 +27,16 @@ import java.io.InputStream;
  * Created by maodq on 16/4/29.
  */
 public class UploadImgAdapter {
+    private int lu;
+
+    public void setLu(int lu) {
+        this.lu = lu;
+    }
+
+
+    public int getLu() {
+        return lu;
+    }
     // 可自定义文件目录名
     private static final String ROOT_NAME = "UPLOAD_CACHE";
     private final String TAG = "UploadImgAdapter";
@@ -95,6 +105,7 @@ public class UploadImgAdapter {
                 case CAMERA_REQUEST_CODE:       // 照相机返回结果
                     if (mMode == MODE_IMG) {
                         File file = composBitmap(mTempCameraFile);
+
                         sendImage(file);
                     } else if (mMode == MODE_HEAD) {
                         // 头像宽高为65dp,对应xxxhdpi为260px
@@ -106,6 +117,7 @@ public class UploadImgAdapter {
                     if (mMode == MODE_IMG) {
                         File file = BitmapHelper.decodeUriAsFile(mActivity, uri);
                         file = composBitmap(file);
+
                         sendImage(file);
                     } else if (mMode == MODE_HEAD) {
                         startCrop(uri, 260, 260);
