@@ -67,7 +67,7 @@ public class ShareDialog {
         Display d = m.getDefaultDisplay();
         WindowManager.LayoutParams p = window.getAttributes();
         p.width = d.getWidth(); //设置dialog的宽度为当前手机屏幕的宽度
-
+　　　　window.setBackgroundDrawableResource(android.R.color.transparent);
 
         window.setAttributes(p);
 
