@@ -1,5 +1,6 @@
 package com.maodq.imguploaddemo;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -10,7 +11,7 @@ import android.widget.ImageView;
 
 import java.io.File;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends Activity implements View.OnClickListener {
 
     private Button btnUploadHead, btnUploadImg;
     private ImageView ivHead, ivImg;

@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -55,11 +56,25 @@ public class UploadImgAdapter {
     private ProgressDialog mProgressDialog;
     private int mMode = -1;
     private QuickOptionDialog mDialog;
+    private Fragment fragment;
 
     public UploadImgAdapter(Activity activity, Action2 l) {
         mActivity = activity;
         mOnImageUpdateListener = l;
         mDialog = new QuickOptionDialog(mActivity);
+        mDialog.setCancelable(true);
+        mDialog.setCanceledOnTouchOutside(true);
+        mDialog.setOnQuickOptionformClickListener(new QuickOptionDialog.OnQuickOptionFormClick() {
+            @Override
+            public void onQuickOptionClick(View v) {
+                clickQuickOption(v);
+            }
+        });
+    }
+    public UploadImgAdapter(Fragment fragment, Action2 l) {
+        this.fragment = fragment;
+        mOnImageUpdateListener = l;
+        mDialog = new QuickOptionDialog(fragment.getActivity());
         mDialog.setCancelable(true);
         mDialog.setCanceledOnTouchOutside(true);
         mDialog.setOnQuickOptionformClickListener(new QuickOptionDialog.OnQuickOptionFormClick() {
@@ -88,12 +103,22 @@ public class UploadImgAdapter {
         if (v.getId() == R.id.tv_photograph) {
             Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(getTempCameraFile()));
-            mActivity.startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+            if(fragment!=null){
+                fragment.startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+            }else {
+                mActivity.startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+            }
+
         } else if (v.getId() == R.id.tv_select) {
             //      Intent albumIntent = new Intent(Intent.ACTION_PICK); // 老版本的相册
 //                albumIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_UNSPECIFIED);
             Intent albumIntent = new Intent(Intent.ACTION_GET_CONTENT).setType("image/*");
-            mActivity.startActivityForResult(albumIntent, ALBUM_REQUEST_CODE);
+            if(fragment!=null){
+                fragment.startActivityForResult(albumIntent, ALBUM_REQUEST_CODE);
+            }else {
+                mActivity.startActivityForResult(albumIntent, ALBUM_REQUEST_CODE);
+            }
+
         } else if (v.getId() == R.id.tv_cancel) {
         }
     }
@@ -207,11 +232,21 @@ public class UploadImgAdapter {
         intent.putExtra("outputY", outputY);
         intent.putExtra("return-data", false);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(getTempCropFile()));
-        mActivity.startActivityForResult(intent, CROP_REQUEST_CODE);
+        if(fragment!=null){
+            fragment.startActivityForResult(intent, CROP_REQUEST_CODE);
+        }else {
+            mActivity.startActivityForResult(intent, CROP_REQUEST_CODE);
+        }
+
     }
 
     private ContentResolver getContentResolver() {
-        return mActivity.getContentResolver();
+        if(fragment!=null){
+            return fragment.getActivity().getContentResolver();
+        }else {
+            return mActivity.getContentResolver();
+        }
+
     }
 
     private File getTempCropFile() {
@@ -229,12 +264,20 @@ public class UploadImgAdapter {
 
     private File composBitmap(File file) {
         Bitmap bitmap = BitmapHelper.revisionImageSize(file);
+        if(fragment!=null){
+            return BitmapHelper.saveBitmap2file(fragment.getActivity(), bitmap);
+        }
         return BitmapHelper.saveBitmap2file(mActivity, bitmap);
     }
 
     private void sendImage(final File file) {
         if (file == null) {
-            Toast.makeText(mActivity, "找不到此图片", Toast.LENGTH_SHORT).show();
+            if(fragment!=null){
+                Toast.makeText(fragment.getActivity(), "找不到此图片", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(mActivity, "找不到此图片", Toast.LENGTH_SHORT).show();
+            }
+
             return;
         }
         // 可以在这里统一进行联网上传操作，把上传结果传回，也可以直接传file交给原页面处理
