@@ -1,136 +1,153 @@
-package com.syhd.payandroid;
+/*
 
+package com.ruiec.test;
+
+import android.app.Activity;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 
-import com.syhd.payandroid.alipay.client.Alipay;
-import com.syhd.payandroid.alipay.server.AlipayServer;
-/*import com.syhd.payandroid.net.HttpUtils;
-import com.syhd.payandroid.net.StringCallback;*/
+import com.alibaba.fastjson.JSON;
+import com.logic.http.AsynNetUtils;
+import com.logic.http.RequestParams;
+
+import com.ruiec.test.bean.Msg;
+import com.syhd.payandroid.util.MD5;
+import com.syhd.payandroid.util.PayUtil;
 import com.syhd.payandroid.weixin.WXPay;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity implements View.OnClickListener {
 
-    private String TAG = "MainActivity";
-    private Button alipayBtn;
-    private Button wxpayBtn;
-
-    /**
-     * 替换自己的支付宝回调地址
-     */
-    private String alipaycallback = "http://callbackurl";
+    private android.widget.Button paybu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        /**
-         * 支付宝支付
-         */
-        alipayBtn = (Button) findViewById(R.id.alipay);
-        alipayBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //在服务器生成订单信息
-                String payInfo = AlipayServer.getPayInfo(getOutTradeNo(), "商品名称", "商品描述", "1", alipaycallback);
-                //客户端调起支付宝支付
-                Alipay alipay = new Alipay(MainActivity.this, payInfo, new Alipay.AlipayResultCallBack() {
-                    @Override
-                    public void onSuccess() {
-                        Log.d(TAG, "支付成功");
-                    }
+        setContentView(R.layout.ac_main);
+        this.paybu = (Button) findViewById(R.id.pay_bu);
 
-                    @Override
-                    public void onDealing() {
-                        Log.d(TAG, "支付中");
-                    }
+        paybu.setOnClickListener(this);
 
-                    @Override
-                    public void onError(int error_code) {
-                        Log.d(TAG, "支付错误" + error_code);
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        Log.d(TAG, "支付取消");
-                    }
-                });
-                alipay.doPay();
-            }
-        });
-
-        /**
-         * 微信支付
-         * 微信支付常见坑
-         * 1.微信开放平台的包名和签名是否和本地的一致
-         * 2.服务器能拿到prepare_id,还是返回-1，查看调起支付接口时的签名是否计算正确
-         * 3.能调起支付，没有返回消息的，请查看自己项目包下是否有（wxapi.WXPayEntryActivity）
-         * 4.本地调试时一定要使用正式签名文件进行调试，否则是调不起微信支付窗口的
-         * 5.网络上遇到说微信缓存会影响返回-1的，目前没有遇到过
-         */
-        wxpayBtn = (Button) findViewById(R.id.wxpay);
-        wxpayBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /**请求自己的服务器获取支付参数*/
-                String url = "http://wxpay.weixin.qq.com/pub_v2/app/app_pay.php?plat=android";
-
-                /**
-                 * {"appid":"wxb4ba3c02aa476ea1","partnerid":"1305176001","package":"Sign=WXPay","noncestr":"d86b800063efb51837c1fd6f6c806acc","timestamp":1468313097,"prepayid":"wx20160712164457dddf6add490242369966","sign":"E6FFA6E8A39589FE4C5A51592095398A"}
-                 */
-               /* HttpUtils.httpGet(MainActivity.this, url,  new StringCallback() {
-                    @Override
-                    public void onError(String request) {
-
-                    }
-
-                    @Override
-                    public void onResponse(String response) {
-                        Log.i(TAG, response);
-                        WXPay wxpay = new WXPay(MainActivity.this, "wxb4ba3c02aa476ea1");
-                        wxpay.doPay(response, new WXPay.WXPayResultCallBack() {
-                            @Override
-                            public void onSuccess() {
-                                Log.d(TAG, "支付成功");
-                            }
-
-                            @Override
-                            public void onError(int error_code) {
-                                Log.d(TAG, "支付失败" + error_code);
-                            }
-
-                            @Override
-                            public void onCancel() {
-                                Log.d(TAG, "支付取消");
-                            }
-                        });
-                    }
-                });*/
-            }
-        });
 
     }
 
-    /**
-     * get the out_trade_no for an order. 生成商户订单号，该值在商户端应保持唯一（可自定义格式规范）
-     */
-    private String getOutTradeNo() {
-        SimpleDateFormat format = new SimpleDateFormat("MMddHHmmss", Locale.getDefault());
-        Date date = new Date();
-        String key = format.format(date);
+    public void sendData() {
 
-        Random r = new Random();
-        key = key + r.nextInt();
-        key = key.substring(0, 15);
-        return key;
+        String nonce_str = PayUtil.create_nonce_str();
+        String out_trade_no = PayUtil.genOutTradNo();
+        String ip = getIp();
+
+        RequestParams params = new RequestParams();
+        params.put("appid", "wx5d0ec692ec17456d");
+        params.put("body", "APP支付测试");
+        params.put("mch_id", "1392976302");
+        params.put("nonce_str", nonce_str);
+        params.put("notify_url", "http://wxpay.weixin.qq.com/pub_v2/pay/notify.v2.php");
+        params.put("out_trade_no", out_trade_no);
+        params.put("spbill_create_ip", ip);
+        params.put("total_fee", "10");
+        params.put("trade_type", "APP");
+
+        String tmp = "appid=wx5d0ec692ec17456d&body=APP支付测试&mch_id=1392976302&nonce_str="
+                + nonce_str + "&notify_url=http://wxpay.weixin.qq.com/pub_v2/pay/notify.v2.php"
+                + "&out_trade_no=" + out_trade_no + "&spbill_create_ip=" + ip + "&total_fee=10&trade_type=APP&"
+                + "key=esckf6uxCxNpN4N1pUk8HHyxyajPW0Tm";
+
+
+        params.put("sign", MD5.MD5Encode(tmp).toUpperCase());
+
+        AsynNetUtils.postXml("https://api.mch.weixin.qq.com/pay/unifiedorder", params, new AsynNetUtils.Callback() {
+            @Override
+            public void onResponse(String response) {
+
+                Log.i("eweaearewa", response);
+
+                if (response == null || "".equals(response)) {
+                    return;
+                }
+                Msg msg = JSON.parseObject(response, Msg.class);
+
+                if ("SUCCESS".equals(msg.getResult_code())) {
+
+                    long tie = System.currentTimeMillis() / 1000;
+
+                    String tx = "appid=" + msg.getAppid() + "&noncestr=" + msg.getNonce_str() +
+                            "&package=Sign=WXPay&partnerid=" + msg.getMch_id() + "&prepayid=" + msg.getPrepay_id()
+                            + "&timestamp=" + tie + "&key=esckf6uxCxNpN4N1pUk8HHyxyajPW0Tm";
+
+
+                    String payInfo = "{\"appid\":\"" + msg.getAppid() +
+                            "\",\"partnerid\":\"" + msg.getMch_id() +
+                            "\",\"prepayid\":\"" + msg.getPrepay_id() +
+                            "\",\"package\":\"Sign=WXPay\"," +
+                            "\"noncestr\":\"" + msg.getNonce_str() + "\"," +
+                            "\"timestamp\":\"" + tie + "\",\"sign\":\"" + MD5.MD5Encode(tx).toUpperCase() + "\"}";
+
+                    Log.i("eseae", tx);
+                    Log.i("payinfo", payInfo + "");
+                    WXPay wxpay = new WXPay(MainActivity.this, "wx5d0ec692ec17456d");
+                    wxpay.doPay(payInfo, new WXPay.WXPayResultCallBack() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d("aaaaaaaaaaaa", "支付成功");
+                        }
+
+                        @Override
+                        public void onError(int error_code) {
+                            Log.d("aaaaaaaaaaaa", "支付失败" + error_code);
+                        }
+
+                        @Override
+                        public void onCancel() {
+                            Log.d("aaaaaaaaaaaa", "支付取消");
+                        }
+                    });
+                }
+
+
+            }
+        });
+
+
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.pay_bu) {
+            sendData();
+
+         */
+/*   String s = "appid=wxd930ea5d5a258f4f&body=test&device_info=1000&mch_id=10000100&nonce_str=ibuaiVcKdpRxkhJA&key=192006250b4c09247ec02edce69f6a2d";
+            String ss = MD5.getMessageDigest(s.getBytes()).toUpperCase();
+            Log.i("ewaeae", ss + "");*//*
+
+            // Toast.makeText(MainActivity.this, getIp() + "-----------", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private String getIp() {
+        WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        int ipAddress = wifiInfo.getIpAddress();
+
+        // 格式化IP address，例如：格式化前：1828825280，格式化后：192.168.1.109
+        String ip = String.format("%d.%d.%d.%d",
+                (ipAddress & 0xff),
+                (ipAddress >> 8 & 0xff),
+                (ipAddress >> 16 & 0xff),
+                (ipAddress >> 24 & 0xff));
+        return ip;
+
+    }
 }
+*/

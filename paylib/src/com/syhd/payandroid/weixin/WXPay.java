@@ -2,6 +2,7 @@ package com.syhd.payandroid.weixin;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.tencent.mm.sdk.constants.Build;
 import com.tencent.mm.sdk.modelpay.PayReq;
@@ -35,7 +36,7 @@ public class WXPay {
     }
 
     public WXPay(Context context, String wx_appid) {
-        mWXApi = WXAPIFactory.createWXAPI(context, wx_appid);
+        mWXApi = WXAPIFactory.createWXAPI(context, null);
         mWXApi.registerApp(wx_appid);
     }
 
@@ -88,16 +89,17 @@ public class WXPay {
         }
 
         PayReq req = new PayReq();
-        req.appId = param.optString("appid");//
-        req.partnerId = param.optString("partnerid");//商户号
+        req.appId = param.optString("appid");
+        req.partnerId = param.optString("partnerid");
         req.prepayId = param.optString("prepayid");
         req.packageValue = param.optString("package");
         req.nonceStr = param.optString("noncestr");
         req.timeStamp = param.optString("timestamp");
         req.sign = param.optString("sign");
 
-
         mWXApi.sendReq(req);
+
+
     }
 
     //支付回调响应
