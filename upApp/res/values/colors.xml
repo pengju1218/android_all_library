@@ -2,7 +2,7 @@
 <resources>
 
     <color name="bg_dialog">#CFFF</color>
-    <color name="text_color_message">#282828</color>
+    <color name="text_color_message">#595959</color>
     <color name="text_color_btn">#007AFF</color>
     <color name="bg_btn_pressed">#CACACB</color>
 
