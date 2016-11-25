@@ -40,12 +40,17 @@ public class CityListActivity extends Activity implements TextWatcher, View.OnCl
     List<ContactItemInterface> filterList;
     private SearchListTask curSearchTask = null;
     private ImageView imgBack;
+    private int resultCode;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.citylist);
         imgBack = (ImageView) findViewById(R.id.topViewBackHome1);
+        Intent intent=getIntent();
+
+            resultCode = intent.getIntExtra("resultCode", 0);
+
 
 
         filterList = new ArrayList<ContactItemInterface>();
@@ -73,7 +78,7 @@ public class CityListActivity extends Activity implements TextWatcher, View.OnCl
                 mIntent.putExtra("city_name", searchList.get(position).getDisplayInfo());
                 mIntent.putExtra("change02", "2000");
                 // 设置结果，并进行传送
-                setResult(10,mIntent);
+                setResult(resultCode,mIntent);
                 finish();
             }
         });

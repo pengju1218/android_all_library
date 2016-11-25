@@ -22,6 +22,17 @@
             android:name=".ChooseActivity"
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.NoTitleBar"></activity>
+
+
+        <activity
+            android:name=".RegionActivity"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.NoTitleBar"></activity>
+
+        <activity
+            android:name=".GlobalActivity"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.NoTitleBar"></activity>
     </application>
 
 </manifest>

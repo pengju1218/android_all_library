@@ -28,7 +28,8 @@
     
     <color name="message_checked">#90918f</color>
     <color name="message_no_check">#323232</color>
-    
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#BDBDBD</color>
     <color name="stick_color_bg">#e2e2e2</color>
 
 </resources>

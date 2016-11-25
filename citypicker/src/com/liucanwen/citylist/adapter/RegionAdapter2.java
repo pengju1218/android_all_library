@@ -1,0 +1,89 @@
+package com.liucanwen.citylist.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.liucanwen.citylist.R;
+
+import java.util.List;
+
+
+/**
+ * Created by code on 9/19/16.
+ */
+public class RegionAdapter2 extends RecyclerView.Adapter<RegionViewHolder> {
+
+    private List<String> itemList;
+    private String checkedStr;
+    private Context context;
+    private LayoutInflater layoutInflater;
+
+    private OnItemClickListener listener;
+
+    private boolean isvi;
+
+
+    public RegionAdapter2(Context context) {
+        this.context = context;
+        layoutInflater = LayoutInflater.from(context);
+    }
+
+    public void setData(List<String> itemList, String checkedStr) {
+        this.itemList = itemList;
+        this.checkedStr = checkedStr;
+        notifyDataSetChanged();
+    }
+
+
+    public void setLo(boolean isvi) {
+        this.isvi = isvi;
+    }
+
+    @Override
+    public RegionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new RegionViewHolder(layoutInflater.inflate(R.layout.item_region_layout, parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(final RegionViewHolder holder, final int position) {
+        holder.textView.setText(itemList.get(position));
+        if (isvi) {
+            holder.img.setVisibility(View.GONE);
+        } else {
+            holder.img.setVisibility(View.VISIBLE);
+        }
+
+        holder.checked.setVisibility(checkedStr.equals(itemList.get(position)) ? View.VISIBLE : View.GONE);
+        holder.itemBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null)
+                    listener.onItemClick(holder, position);
+            }
+        });
+    }
+
+
+    @Override
+    public int getItemCount() {
+        return isEmpty(itemList) ? 0 : itemList.size();
+    }
+
+
+    private <D> boolean isEmpty(List<D> list) {
+        return (list == null || list.isEmpty());
+    }
+
+    public void setListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(RegionViewHolder holder, int position);
+    }
+
+
+}
