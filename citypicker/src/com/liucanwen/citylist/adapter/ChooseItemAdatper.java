@@ -51,7 +51,7 @@ public class ChooseItemAdatper extends ArrayAdapter<String> {
         // viewHolder.name.setTextColor(Color.GREEN);
         viewHolder.name.setText(getItem(position));
         viewHolder.name.setTextColor(context.getResources().getColor(R.color.white));
-        convertView.setBackgroundColor(context.getResources().getColor(R.color.nomal_bg));
+        convertView.setBackgroundColor(context.getResources().getColor(R.color.bac));
         return convertView;
     }
 

@@ -6,9 +6,12 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.liucanwen.citylist.adapter.RegionAdapter;
 import com.liucanwen.citylist.adapter.RegionAdapter2;
 import com.liucanwen.citylist.adapter.RegionViewHolder;
 import com.liucanwen.citylist.bean.all.Children;
@@ -23,7 +26,7 @@ import java.util.List;
 /**
  * Created by code on 9/19/16.
  */
-public class GlobalActivity extends Activity implements RegionAdapter2.OnItemClickListener {
+public class GlobalActivity extends Activity implements RegionAdapter2.OnItemClickListener, View.OnClickListener {
 
     private RecyclerView recyclerView;
     private RegionAdapter2 adapter;
@@ -40,11 +43,19 @@ public class GlobalActivity extends Activity implements RegionAdapter2.OnItemCli
 
     private int curPage;
     private int resultCode = 0;
+    private android.widget.ImageView topViewBackHome1;
+    private android.widget.TextView topViewCenterText1;
+    private android.widget.RelativeLayout top;
+    private RecyclerView recycleView;
 
     @Override
     protected void onCreate(Bundle ins) {
         super.onCreate(ins);
         setContentView(R.layout.activity_region);
+        this.recycleView = (RecyclerView) findViewById(R.id.recycleView);
+        this.top = (RelativeLayout) findViewById(R.id.top);
+        this.topViewCenterText1 = (TextView) findViewById(R.id.topViewCenterText1);
+        this.topViewBackHome1 = (ImageView) findViewById(R.id.topViewBackHome1);
         Intent intent = getIntent();
         if (intent != null) {
             region = intent.getStringExtra("region");
@@ -60,7 +71,7 @@ public class GlobalActivity extends Activity implements RegionAdapter2.OnItemCli
         itemList = new ArrayList<>();
         provinces = new ArrayList<>();
         cities = new ArrayList<>();
-
+        topViewBackHome1.setOnClickListener(this);
         initViews();
     }
 
@@ -100,7 +111,7 @@ public class GlobalActivity extends Activity implements RegionAdapter2.OnItemCli
                     else
                         itemList.add(city.getName());
                 }
-                if(city_List.get(0).getChildren()==null||city_List.get(0).getChildren().size()==0){
+                if (city_List.get(0).getChildren() == null || city_List.get(0).getChildren().size() == 0) {
                     adapter.setLo(true);
                 }
 
@@ -119,8 +130,15 @@ public class GlobalActivity extends Activity implements RegionAdapter2.OnItemCli
                 cities.addAll(itemList);
                 itemList.clear();
 
-                if(district_List==null){
-                    curPage=2;
+                if (district_List == null) {
+                    curPage = 2;
+
+                    Intent mIntent = new Intent();
+                    mIntent.putExtra("result", province + " " + city);
+                    this.setResult(resultCode, mIntent);
+                    finish();
+
+
                     break;
                 }
 
@@ -130,7 +148,7 @@ public class GlobalActivity extends Activity implements RegionAdapter2.OnItemCli
                     else
                         itemList.add(district.getName());
                 }
-                if(district_List.get(0).getChildren()==null||district_List.get(0).getChildren().size()==0){
+                if (district_List.get(0).getChildren() == null || district_List.get(0).getChildren().size() == 0) {
                     adapter.setLo(true);
                 }
 
@@ -140,11 +158,11 @@ public class GlobalActivity extends Activity implements RegionAdapter2.OnItemCli
 
             case DISTRICT:
                 Intent mIntent = new Intent();
-                if(!itemList.isEmpty()){
+                if (!itemList.isEmpty()) {
                     district = itemList.get(position);
                     mIntent.putExtra("result", province + " " + city + " " + district);
-                }else {
-                    mIntent.putExtra("result", province + " " + city  );
+                } else {
+                    mIntent.putExtra("result", province + " " + city);
                 }
 
                 this.setResult(resultCode, mIntent);
@@ -200,4 +218,10 @@ public class GlobalActivity extends Activity implements RegionAdapter2.OnItemCli
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.topViewBackHome1) {
+            onBackPressed();
+        }
+    }
 }
